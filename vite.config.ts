@@ -8,6 +8,9 @@ export default defineConfig({
     server: {
         host: '127.0.0.1',
     },
+    build: {
+        manifest: true,
+    },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
