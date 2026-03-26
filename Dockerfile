@@ -35,8 +35,11 @@ COPY composer.json composer.lock ./
 # Устанавливаем PHP зависимости без скриптов
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
-# Копируем остальные файлы проекта
-COPY . .
+# Копируем остальные файлы проекта (игнорируя .gitignore)
+COPY --chown=www-data:www-data . .
+
+# Игнорируем .gitignore при копировании
+RUN rm -rf .gitignore
 
 # Устанавливаем Node зависимости и билдим ассеты с ENV переменными
 ENV ASSET_URL=https://greenmetric.onrender.com
