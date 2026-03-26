@@ -12,9 +12,9 @@
 
 2. **Запушьте код на GitHub**:
    ```bash
-   git branch -M main
+   git branch -M master
    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   git push -u origin main
+   git push -u origin master
    ```
 
 ---
@@ -27,7 +27,7 @@
 
 ---
 
-## 📋 Шаг 3: Создание базы данных
+##  Шаг 3: Создание базы данных
 
 1. В Dashboard нажмите **New +** → **PostgreSQL**
 2. Заполните:
@@ -39,7 +39,7 @@
 
 ---
 
-## 📋 Шаг 4: Создание веб-сервиса
+## 📋 Шаг 4: Создание веб-сервиса (Docker)
 
 1. В Dashboard нажмите **New +** → **Web Service**
 2. Подключите ваш GitHub репозиторий
@@ -49,19 +49,18 @@
    |------|----------|
    | **Name** | `elios-backend` |
    | **Region** | Frankfurt (Germany) |
-   | **Branch** | `main` |
+   | **Branch** | `master` |
    | **Root Directory** | `GreenMetric` |
-   | **Runtime** | `PHP` |
-   | **Build Command** | `cp .env.production .env && composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan config:cache && php artisan route:cache && php artisan view:cache` |
-   | **Start Command** | `cp .env.production .env && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT` |
+   | **Runtime** | **Docker** |
 
 4. **Plan**: Выберите **Free**
+5. Нажмите **Create Web Service**
 
 ---
 
 ## 📋 Шаг 5: Настройка переменных окружения
 
-Добавьте следующие переменные в разделе **Environment**:
+После создания сервиса перейдите в **Environment** и добавьте:
 
 ```
 APP_NAME=Elios
@@ -89,21 +88,21 @@ MAIL_MAILER=log
 VITE_APP_NAME=Elios
 ```
 
-> ⚠️ **Важно**: Замените `<host-from-database>`, `<user-from-database>`, `<password-from-database>` на значения из вашей PostgreSQL базы данных Render.
+> ⚠️ **Важно**: Замените `<host-from-database>`, `<user-from-database>`, `<password-from-database>` на значения из вашей PostgreSQL базы данных Render (возьмите из Dashboard базы данных).
 
 ---
 
 ## 📋 Шаг 6: Деплой
 
-1. Нажмите **Create Web Service**
-2. Дождитесь завершения сборки (5-10 минут)
+1. После добавления переменных сервис автоматически перезапустится
+2. Дождитесь сборки Docker-образа (5-10 минут)
 3. После успешного деплоя сервис будет доступен по URL: `https://elios-backend.onrender.com`
 
 ---
 
 ## 🔧 Дополнительные команды
 
-### Генерация APP_KEY (если нужно):
+### Генерация APP_KEY (локально):
 ```bash
 php artisan key:generate
 ```
@@ -111,11 +110,6 @@ php artisan key:generate
 ### Запуск миграций вручную:
 ```bash
 php artisan migrate --force
-```
-
-### Просмотр логов:
-```bash
-php artisan pail
 ```
 
 ### Очистка кэша:
@@ -148,23 +142,32 @@ php artisan view:clear
 
 ## 🆘 Решение проблем
 
-### Ошибка сборки:
+### Ошибка сборки Docker:
 ```
-composer install failed
+build failed: exit status 1
 ```
-**Решение**: Проверьте `composer.json` и убедитесь, что все зависимости доступны.
+**Решение**: Проверьте логи сборки. Убедитесь, что `Dockerfile` и `apache.conf` существуют.
 
 ### Ошибка миграции:
 ```
-SQLSTATE[HY000] [2002] Connection refused
+SQLSTATE[08006] connection refused
 ```
-**Решение**: Проверьте переменные окружения базы данных.
+**Решение**: Проверьте переменные окружения базы данных (DB_HOST, DB_USERNAME, DB_PASSWORD).
 
 ### Frontend не загружается:
 ```
 404 Not Found - assets
 ```
-**Решение**: Убедитесь, что `npm run build` выполнился успешно и `public/build` существует.
+**Решение**: Убедитесь, что `npm run build` выполнился успешно в Dockerfile. Проверьте логи сборки.
+
+### Ошибка 500:
+```
+Internal Server Error
+```
+**Решение**: 
+1. Проверьте логи в Dashboard Render
+2. Убедитесь, что `APP_KEY` сгенерирован (добавьте в Environment вручную)
+3. Проверьте права доступа к `storage/` и `bootstrap/cache/`
 
 ---
 
