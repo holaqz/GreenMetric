@@ -2,7 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, FileText, CheckCircle2 } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/index';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login, register } from '@/routes/index';
 
 withDefaults(
     defineProps<{
