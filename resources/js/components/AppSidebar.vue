@@ -13,8 +13,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import cycles from '@/routes/cycles';
-import { edit as profileEdit } from '@/routes/profile';
+import cycles from '@/routes/cycles/index';
+import { edit as profileEdit } from '@/routes/profile/index';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
