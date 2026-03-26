@@ -26,14 +26,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Устанавливаем рабочую директорию
 WORKDIR /var/www/html
 
-# Копируем файлы проекта
-COPY . .
+# Копируем .env.docker как временный .env для сборки
+COPY .env.docker .env
 
-# Устанавливаем PHP зависимости
-RUN composer install --no-dev --optimize-autoloader
+# Копируем composer.json и composer.lock сначала для кэширования
+COPY composer.json composer.lock ./
+
+# Устанавливаем PHP зависимости без скриптов
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
+# Копируем остальные файлы проекта
+COPY . .
 
 # Устанавливаем Node зависимости и билдим ассеты
 RUN npm install && npm run build
+
+# Запускаем скрипты после копирования всех файлов
+RUN composer run-script post-autoload-dump
 
 # Настраиваем права доступа
 RUN chown -R www-data:www-data /var/www/html \
