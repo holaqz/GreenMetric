@@ -9,10 +9,11 @@ export default defineConfig({
         host: '127.0.0.1',
     },
     build: {
-        manifest: true,
+        manifest: 'manifest.json',
         outDir: 'public/build',
+        emptyOutDir: true,
     },
-    base: process.env.ASSET_URL || '/build/',
+    base: '/build/',
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
