@@ -38,8 +38,8 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 # Копируем остальные файлы проекта
 COPY . .
 
-# Устанавливаем Node зависимости и билдим ассеты
-RUN npm install && npm run build
+# Устанавливаем Node зависимости (билд будет в entrypoint)
+RUN npm install
 
 # Запускаем скрипты после копирования всех файлов
 RUN composer run-script post-autoload-dump
