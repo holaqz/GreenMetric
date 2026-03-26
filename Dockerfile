@@ -45,7 +45,7 @@ RUN npm install && npm run build
 RUN composer run-script post-autoload-dump
 
 # Кэшируем конфигурацию и запускаем миграции
-RUN php artisan migrate --force \
+RUN php artisan migrate --force --no-interaction --ansi 2>&1 | tee /tmp/migration.log \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
