@@ -40,7 +40,8 @@ COPY . .
 
 # Устанавливаем Node зависимости и билдим ассеты с ENV переменными
 ENV ASSET_URL=https://greenmetric.onrender.com
-RUN npm install && ASSET_URL=https://greenmetric.onrender.com npm run build
+RUN npm install
+RUN npm run build
 
 # Запускаем скрипты после копирования всех файлов
 RUN composer run-script post-autoload-dump
