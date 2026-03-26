@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: elios-backend
+    name: greenmetric-backend
     env: docker
     region: frankfurt
     plan: free
     dockerCommand: |
-      cp .env.production .env
       php artisan migrate --force
       apache2-foreground
     envVars:
