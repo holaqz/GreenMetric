@@ -26,8 +26,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Устанавливаем рабочую директорию
 WORKDIR /var/www/html
 
-# Копируем .env.docker как временный .env для сборки
-COPY .env.docker .env
+# Копируем docker.env как временный .env для сборки
+COPY docker.env .env
 
 # Копируем composer.json и composer.lock сначала для кэширования
 COPY composer.json composer.lock ./
