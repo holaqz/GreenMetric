@@ -17,7 +17,6 @@ storage/logs/*
 !storage/logs/.gitignore
 build
 dist
-public/build
 public/hot-reload
 *.log
 npm-debug.log*
