@@ -38,8 +38,9 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 # Копируем остальные файлы проекта
 COPY . .
 
-# Устанавливаем Node зависимости (билд будет в entrypoint)
-RUN npm install
+# Устанавливаем Node зависимости и билдим ассеты с ENV переменными
+ENV ASSET_URL=https://greenmetric.onrender.com
+RUN npm install && ASSET_URL=https://greenmetric.onrender.com npm run build
 
 # Запускаем скрипты после копирования всех файлов
 RUN composer run-script post-autoload-dump
