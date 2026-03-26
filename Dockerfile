@@ -52,8 +52,12 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Копируем Apache конфиг
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
+# Копируем entrypoint скрипт
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Открываем порт
 EXPOSE 80
 
-# Запускаем Apache
-CMD ["apache2-foreground"]
+# Запускаем Apache через entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
