@@ -26,8 +26,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Устанавливаем рабочую директорию
 WORKDIR /var/www/html
 
-# Копируем docker.env как временный .env для сборки
-COPY docker.env .env
+# Копируем .env.production для production сборки
+COPY .env.production .env
 
 # Копируем composer.json и composer.lock сначала для кэширования
 COPY composer.json composer.lock ./
@@ -44,8 +44,14 @@ RUN npm install && npm run build
 # Запускаем скрипты после копирования всех файлов
 RUN composer run-script post-autoload-dump
 
-# Настраиваем права доступа
-RUN chown -R www-data:www-data /var/www/html \
+# Генерируем ключ приложения (если не указан) и запускаем миграции
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan migrate --force
+
+# Настраиваем права доступа только для необходимых директорий
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
