@@ -47,9 +47,10 @@ RUN npm run build
 RUN composer run-script post-autoload-dump
 
 # Настраиваем права доступа только для необходимых директорий
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build \
     && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+    && chmod -R 775 /var/www/html/bootstrap/cache \
+    && chmod -R 755 /var/www/html/public/build
 
 # Копируем Apache конфиг
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
