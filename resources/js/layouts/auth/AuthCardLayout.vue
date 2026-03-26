@@ -8,7 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { home } from '@/routes/index';
+import { home } from '@/routes/index.ts';
 
 defineProps<{
     title?: string;

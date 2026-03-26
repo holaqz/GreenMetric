@@ -14,7 +14,7 @@ import {
     Save,
 } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes/index';
+import { dashboard } from '@/routes/index.ts';
 import type { BreadcrumbItem, Category } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 

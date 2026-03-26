@@ -2,7 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Plus, Calendar, CheckCircle2, Clock, Lock } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes/index';
+import { dashboard } from '@/routes/index.ts';
 import type { BreadcrumbItem, Category } from '@/types';
 import { ref } from 'vue';
 

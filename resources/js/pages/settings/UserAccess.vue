@@ -2,7 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes/index';
+import { dashboard } from '@/routes/index.ts';
 import type { BreadcrumbItem } from '@/types';
 
 interface User {
