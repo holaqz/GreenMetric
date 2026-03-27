@@ -458,7 +458,12 @@ class GreenMetricTemplateExporter
             \Log::info('Setting image', ['slot' => $slot, 'path' => $imagePath, 'exists' => file_exists($imagePath)]);
             
             try {
-                $template->setImageValue($slot, $imagePath);
+                $template->setImageValue($slot, [
+                    'path' => $imagePath,
+                    'width' => 600,
+                    'height' => 400,
+                    'ratio' => true,
+                ]);
                 \Log::info('Image set successfully', ['slot' => $slot]);
             } catch (\Exception $e) {
                 \Log::error('Failed to set image', ['slot' => $slot, 'error' => $e->getMessage()]);
