@@ -55,6 +55,9 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Копируем Apache конфиг
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
+# Копируем шаблон для экспорта
+COPY --chown=www-data:www-data storage/app/templates/master_template.docx /var/www/html/storage/app/templates/master_template.docx
+
 # Копируем entrypoint скрипт
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
