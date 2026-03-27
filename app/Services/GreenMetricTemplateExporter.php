@@ -453,14 +453,15 @@ class GreenMetricTemplateExporter
                 continue;
             }
 
-            // Вставляем фото через клонирование блока
+            // Вставляем фото напрямую через setImageValue
+            $imagePath = $photos[$idx];
+            \Log::info('Setting image', ['slot' => $slot, 'path' => $imagePath, 'exists' => file_exists($imagePath)]);
+            
             try {
-                \Log::info('Cloning block for photo', ['slot' => $slot, 'path' => $photos[$idx]]);
-                $template->cloneBlock($slot, 0, true, false, [['path' => $photos[$idx]]]);
+                $template->setImageValue($slot, $imagePath);
+                \Log::info('Image set successfully', ['slot' => $slot]);
             } catch (\Exception $e) {
-                // Если клонирование не работает, пробуем простую вставку
-                \Log::error('Clone block failed, trying setImageValue', ['error' => $e->getMessage()]);
-                $template->setImageValue($slot, $photos[$idx]);
+                \Log::error('Failed to set image', ['slot' => $slot, 'error' => $e->getMessage()]);
             }
 
             // Вставляем описание
