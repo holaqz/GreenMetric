@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Middleware\TrustProxies;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,11 +25,15 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // Trust Render proxy for HTTPS
+        $middleware->use(TrustProxies::class);
+        config(['trustedproxies.proxies' => ['*']]);
+
         $middleware->validateCsrfTokens(except: [
             'api/*',
             'water/*',
         ]);
-        
+
         // Регистрация middleware для проверки прав доступа
         $middleware->alias([
             'category.access' => CheckCategoryAccess::class,
