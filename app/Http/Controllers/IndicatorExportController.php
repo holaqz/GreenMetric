@@ -20,30 +20,44 @@ class IndicatorExportController extends Controller
      */
     public function exportIndicator(Cycle $cycle, int $indicatorId)
     {
-        $indicator = Indicator::with('category')->findOrFail($indicatorId);
-        $response = IndicatorResponse::where('cycle_id', $cycle->id)
-            ->where('indicator_id', $indicator->id)
-            ->with(['indicator.category', 'files'])
-            ->first();
+        try {
+            $indicator = Indicator::with('category')->findOrFail($indicatorId);
+            $response = IndicatorResponse::where('cycle_id', $cycle->id)
+                ->where('indicator_id', $indicator->id)
+                ->with(['indicator.category', 'files'])
+                ->first();
 
-        if (!$response) {
-            abort(404, 'Данные для этого индикатора ещё не заполнены');
+            if (!$response) {
+                abort(404, 'Данные для этого индикатора ещё не заполнены');
+            }
+
+            $profile = $cycle->latestProfile;
+            $exporter = app(GreenMetricTemplateExporter::class);
+            $templatePath = $exporter->resolveTemplatePath();
+            
+            \Log::info('Export indicator', [
+                'indicator_id' => $indicatorId,
+                'cycle_id' => $cycle->id,
+                'template_path' => $templatePath,
+                'response_id' => $response->id,
+            ]);
+            
+            if (!$templatePath) {
+                \Log::error('Template not found');
+                abort(500, 'Не найден master_template.docx');
+            }
+
+            $filename = $exporter->buildIndicatorFileName($cycle, $indicator);
+            $content = $exporter->buildIndicatorDocxBytes($templatePath, $cycle, $response, $profile);
+
+            return Response::make($content, 200, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'Content-Disposition' => "attachment; filename=\"{$filename}.docx\"",
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Export error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            throw $e;
         }
-
-        $profile = $cycle->latestProfile;
-        $exporter = app(GreenMetricTemplateExporter::class);
-        $templatePath = $exporter->resolveTemplatePath();
-        if (!$templatePath) {
-            abort(500, 'Не найден master_template.docx');
-        }
-
-        $filename = $exporter->buildIndicatorFileName($cycle, $indicator);
-        $content = $exporter->buildIndicatorDocxBytes($templatePath, $cycle, $response, $profile);
-
-        return Response::make($content, 200, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'Content-Disposition' => "attachment; filename=\"{$filename}.docx\"",
-        ]);
     }
 
     /**
