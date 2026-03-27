@@ -275,12 +275,16 @@ class GreenMetricTemplateExporter
     private function collectPhotos(IndicatorResponse $response): array
     {
         $photos = [];
+        \Log::info('Collecting photos', ['response_id' => $response->id, 'files_count' => $response->files->count()]);
+        
         foreach ($response->files as $file) {
             if ($file->file_type === 'link') {
                 continue;
             }
 
             $path = storage_path('app/private/' . $file->file_path_storage);
+            \Log::info('Checking file path', ['file_id' => $file->id, 'storage_path' => $file->file_path_storage, 'full_path' => $path, 'exists' => file_exists($path)]);
+            
             if (!file_exists($path)) {
                 continue;
             }
@@ -289,6 +293,8 @@ class GreenMetricTemplateExporter
                 $photos[] = $path;
             }
         }
+        
+        \Log::info('Collected photos count', ['count' => count($photos)]);
         return $photos;
     }
 
@@ -389,8 +395,11 @@ class GreenMetricTemplateExporter
 
     private function injectTemplateImages(TemplateProcessor $template, array $photos, array $photoDescriptions = []): void
     {
-        $vars = $template->getVariables();
+        \Log::info('Injecting images', ['photos_count' => count($photos), 'descriptions_count' => count($photoDescriptions)]);
         
+        $vars = $template->getVariables();
+        \Log::info('Template variables', ['vars' => $vars]);
+
         // Ищем все плейсхолдеры для фото: photo, photo_1, photo_2, ...
         $photoSlots = [];
         foreach ($vars as $var) {
@@ -398,7 +407,7 @@ class GreenMetricTemplateExporter
                 $photoSlots[] = $var;
             }
         }
-        
+
         // Ищем плейсхолдеры для описаний: photo_desc, photo_1_desc, photo_2_desc, ...
         $descSlots = [];
         foreach ($vars as $var) {
@@ -407,18 +416,21 @@ class GreenMetricTemplateExporter
             }
         }
         
+        \Log::info('Photo slots found', ['slots' => $photoSlots, 'desc_slots' => $descSlots]);
+
         if (empty($photoSlots)) {
             // Если нет плейсхолдеров для фото - не вставляем
+            \Log::warning('No photo placeholders in template');
             return;
         }
-        
+
         // Сортируем фото: photo, photo_1, photo_2, ...
         usort($photoSlots, function ($a, $b) {
             $an = preg_match('/_(\d+)$/', $a, $am) ? (int) $am[1] : 0;
             $bn = preg_match('/_(\d+)$/', $b, $bm) ? (int) $bm[1] : 0;
             return $an <=> $bn;
         });
-        
+
         // Сортируем описания: photo_desc, photo_1_desc, photo_2_desc, ...
         usort($descSlots, function ($a, $b) {
             $an = preg_match('/_(\d+)_desc$/', $a, $am) ? (int) $am[1] : 0;
@@ -429,6 +441,8 @@ class GreenMetricTemplateExporter
         // Вставляем фото и описания
         $idx = 0;
         foreach ($photoSlots as $slot) {
+            \Log::info('Processing photo slot', ['slot' => $slot, 'idx' => $idx, 'has_photo' => isset($photos[$idx])]);
+            
             if (!isset($photos[$idx])) {
                 // Если фото закончились - очищаем плейсхолдеры
                 $template->setValue($slot, '');
@@ -439,23 +453,26 @@ class GreenMetricTemplateExporter
                 continue;
             }
 
-            // Вставляем фото
-            $template->setImageValue($slot, [
-                'path' => $photos[$idx],
-                'width' => 300,
-                'height' => 200,
-                'ratio' => true,
-            ]);
-            
+            // Вставляем фото через клонирование блока
+            try {
+                \Log::info('Cloning block for photo', ['slot' => $slot, 'path' => $photos[$idx]]);
+                $template->cloneBlock($slot, 0, true, false, [['path' => $photos[$idx]]]);
+            } catch (\Exception $e) {
+                // Если клонирование не работает, пробуем простую вставку
+                \Log::error('Clone block failed, trying setImageValue', ['error' => $e->getMessage()]);
+                $template->setImageValue($slot, $photos[$idx]);
+            }
+
             // Вставляем описание
             $description = $photoDescriptions[$idx] ?? '';
             if (isset($descSlots[$idx])) {
                 $template->setValue($descSlots[$idx], $description);
+                \Log::info('Set description', ['slot' => $descSlots[$idx], 'description' => $description]);
             }
-            
+
             $idx++;
         }
-        
+
         // Очищаем оставшиеся неиспользованные описания
         for ($i = $idx; $i < count($descSlots); $i++) {
             $template->setValue($descSlots[$i], '');
