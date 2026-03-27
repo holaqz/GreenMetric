@@ -518,6 +518,7 @@ function changeCategory(categoryCode: string) {
                                                 :disabled="!canEditIndicator(indicator.response?.status || '', indicator.can_edit_category)"
                                                 type="number"
                                                 step="0.01"
+                                                maxlength="9"
                                                 :placeholder="`Введите значение (${indicator.unit})`"
                                                 :class="[
                                                     'block w-full max-w-md rounded-lg border px-3 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-2',
@@ -594,6 +595,7 @@ function changeCategory(categoryCode: string) {
                                             :disabled="!canEditIndicator(indicator.response?.status || '', indicator.can_edit_category)"
                                             @change="(e) => updateResponse(indicator, { value_text: (e.target as HTMLInputElement).value })"
                                             type="text"
+                                            maxlength="255"
                                             :placeholder="indicator.unit"
                                             :class="[
                                                 'block w-full max-w-md rounded-lg border px-3 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-2',
@@ -836,6 +838,7 @@ function changeCategory(categoryCode: string) {
                         v-model="descriptionForm.program_description"
                         :disabled="!canEditIndicator(currentIndicator?.response?.status || '', currentIndicator?.can_edit_category)"
                         rows="6"
+                        maxlength="5000"
                         placeholder="Опишите программу, инициативу или меры, принимаемые университетом..."
                         :class="[
                             'block w-full rounded-lg border px-3 py-2 text-gray-900 shadow-sm focus:outline-none focus:ring-2',
@@ -845,7 +848,7 @@ function changeCategory(categoryCode: string) {
                         ]"
                     />
                     <p class="mt-1 text-xs text-gray-500">
-                        Это описание будет включено в отчёт для UI GreenMetric
+                        Это описание будет включено в отчёт для UI GreenMetric (макс. 5000 символов)
                     </p>
                 </div>
 

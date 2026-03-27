@@ -40,5 +40,28 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        // Вывод информации о созданных пользователях
+        $this->command->info('');
+        $this->command->info('========================================');
+        $this->command->info('  УЧЁТНЫЕ ДАННЫЕ ПОЛЬЗОВАТЕЛЕЙ');
+        $this->command->info('========================================');
+        $this->command->info('');
+        $this->command->info('  АДМИНИСТРАТОР:');
+        $this->command->info('  Email: admin@greenmetric.com');
+        $this->command->info('  Пароль: Admin@2026');
+        $this->command->info('');
+        $this->command->info('  ТЕСТИРОВЩИКИ:');
+        $this->command->info('  Email: user1@greenmetric.com');
+        $this->command->info('  Пароль: User@2026');
+        $this->command->info('');
+        $this->command->info('  Email: user2@greenmetric.com');
+        $this->command->info('  Пароль: User@2026');
+        $this->command->info('');
+        $this->command->info('  Email: manager@greenmetric.com');
+        $this->command->info('  Пароль: User@2026');
+        $this->command->info('');
+        $this->command->info('========================================');
+        $this->command->info('');
     }
 }

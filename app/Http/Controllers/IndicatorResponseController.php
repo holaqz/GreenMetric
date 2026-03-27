@@ -335,7 +335,7 @@ class IndicatorResponseController extends Controller
         return match ($indicator->input_type) {
             'number' => [
                 ...$rules,
-                'value_numeric' => 'nullable|numeric|min:' . ($validationRules['min'] ?? 0),
+                'value_numeric' => 'nullable|numeric|min:' . ($validationRules['min'] ?? 0) . '|max:9999999',
             ],
             'boolean' => [
                 ...$rules,
@@ -345,8 +345,8 @@ class IndicatorResponseController extends Controller
                 ...$rules,
                 'selected_option' => 'nullable|integer|min:1|max:' . count($validationRules['options'] ?? []),
                 'value_numeric' => $indicator->input_type === 'select_with_area'
-                    ? 'nullable|numeric|min:0'
-                    : 'nullable|numeric',
+                    ? 'nullable|numeric|min:0|max:9999999'
+                    : 'nullable|numeric|min:0|max:9999999',
             ],
             'text' => [
                 ...$rules,
