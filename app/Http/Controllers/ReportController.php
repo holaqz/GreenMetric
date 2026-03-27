@@ -33,7 +33,7 @@ class ReportController extends Controller
                     });
                 })
                 ->orderByRaw(
-                    "(SELECT `order` FROM indicators WHERE indicators.id = indicator_responses.indicator_id)"
+                    '(SELECT "order" FROM indicators WHERE indicators.id = indicator_responses.indicator_id)'
                 )
                 ->get();
 
@@ -120,6 +120,7 @@ class ReportController extends Controller
                     $q->where('code', $categoryCode);
                 });
             })
+            ->orderByRaw('(SELECT "order" FROM indicators WHERE indicators.id = indicator_responses.indicator_id)')
             ->get();
 
         // Собираем все файлы
@@ -143,7 +144,7 @@ class ReportController extends Controller
         }
         $tempFile = $tempDir . DIRECTORY_SEPARATOR . 'evidence_' . $categoryCode . '_' . $cycle->year . '_' . time() . '.zip';
 
-        if ($zip->open($tempFile, \ZipArchive::CREATE) !== true) {
+        if ($zip->open($tempFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
             abort(500, 'Не удалось создать ZIP архив');
         }
 
@@ -170,7 +171,12 @@ class ReportController extends Controller
 
         $zip->close();
 
-        return Response::download($tempFile)->deleteFileAfterSend();
+        // Проверяем, что файл существует
+        if (!file_exists($tempFile)) {
+            abort(500, 'Не удалось создать ZIP файл');
+        }
+
+        return Response::download($tempFile, 'evidence_' . $categoryCode . '_' . $cycle->year . '.zip')->deleteFileAfterSend();
     }
 
     /**
