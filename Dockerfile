@@ -46,9 +46,6 @@ ENV ASSET_URL=https://greenmetric.onrender.com
 RUN npm install
 RUN npm run build
 
-# Запускаем скрипты после копирования всех файлов
-RUN composer run-script post-autoload-dump
-
 # Настраиваем права доступа только для необходимых директорий
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build \
     && chmod -R 775 /var/www/html/storage \
