@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-# Запускаем миграции
+# Запускаем миграции (force для production)
 php artisan migrate --force
 
 # Запускаем сидеры (создание категорий, индикаторов, пользователей)
-php artisan db:seed --class=GreenMetricIndicatorsSeeder
-php artisan db:seed
+php artisan db:seed --class=GreenMetricIndicatorsSeeder --force
+php artisan db:seed --force
 
 # Запускаем Apache
 exec apache2-foreground
