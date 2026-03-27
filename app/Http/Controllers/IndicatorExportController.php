@@ -23,7 +23,7 @@ class IndicatorExportController extends Controller
         $indicator = Indicator::with('category')->findOrFail($indicatorId);
         $response = IndicatorResponse::where('cycle_id', $cycle->id)
             ->where('indicator_id', $indicator->id)
-            ->with('files')
+            ->with(['indicator.category', 'files'])
             ->first();
 
         if (!$response) {

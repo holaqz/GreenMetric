@@ -98,7 +98,8 @@ class GreenMetricTemplateExporter
     public function buildIndicatorDocxBytes(
         string $templatePath,
         Cycle $cycle,
-        IndicatorResponse $response
+        IndicatorResponse $response,
+        $profile = null
     ): string {
         $indicator = $response->indicator;
         
