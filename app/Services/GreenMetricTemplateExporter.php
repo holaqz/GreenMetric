@@ -460,8 +460,8 @@ class GreenMetricTemplateExporter
             try {
                 $template->setImageValue($slot, [
                     'path' => $imagePath,
-                    'width' => 600,
-                    'height' => 400,
+                    'width' => 420,
+                    'height' => 280,
                     'ratio' => true,
                 ]);
                 \Log::info('Image set successfully', ['slot' => $slot]);
