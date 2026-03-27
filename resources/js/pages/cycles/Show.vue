@@ -213,8 +213,12 @@ function getStatusConfig(status: string) {
 }
 
 function updateResponse(indicator: Indicator, data: Record<string, any>) {
+    if (!indicator?.response?.id) {
+        console.error('No response ID for indicator', indicator);
+        return;
+    }
     const form = useForm(data);
-    form.patch(`/responses/${indicator.response?.id}`, {
+    form.patch(`/responses/${indicator.response.id}`, {
         preserveScroll: true,
         onSuccess: () => {
             // Данные обновлены
@@ -223,8 +227,12 @@ function updateResponse(indicator: Indicator, data: Record<string, any>) {
 }
 
 function updateStatus(indicator: Indicator, status: string) {
+    if (!indicator?.response?.id) {
+        console.error('No response ID for indicator', indicator);
+        return;
+    }
     const form = useForm({ status });
-    form.patch(`/responses/${indicator.response?.id}`, {
+    form.patch(`/responses/${indicator.response.id}`, {
         preserveScroll: true,
         onSuccess: () => {
             // Статус обновлён
