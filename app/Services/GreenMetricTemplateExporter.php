@@ -485,9 +485,16 @@ class GreenMetricTemplateExporter
         if (!extension_loaded('gd')) {
             // Если GD нет, возвращаем оригинальные пути
             // Word сможет обработать их как есть
+            \Log::warning('GD extension not loaded, using original paths');
             return $photos;
         }
-    
+
+        // Проверяем, есть ли поддержка imagejpeg
+        if (!function_exists('imagejpeg')) {
+            \Log::warning('imagejpeg function not available, using original paths');
+            return $photos;
+        }
+
         $result = [];
         $tempDir = storage_path('app/temp');
         if (!is_dir($tempDir)) {
@@ -495,12 +502,24 @@ class GreenMetricTemplateExporter
         }
 
         foreach ($photos as $path) {
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            
+            // PNG файлы не конвертируем - вставляем как есть
+            if ($ext === 'png') {
+                $result[] = $path;
+                \Log::info('Keeping PNG file as-is', ['path' => $path]);
+                continue;
+            }
+            
+            // JPEG файлы пытаемся оптимизировать
             $raw = @file_get_contents($path);
             if ($raw === false) {
+                $result[] = $path;
                 continue;
             }
             $src = @imagecreatefromstring($raw);
             if (!$src) {
+                $result[] = $path;
                 continue;
             }
 
