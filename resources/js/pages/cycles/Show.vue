@@ -167,12 +167,15 @@ const selectedIndicator = ref<number | null>(null);
 const showFileModal = ref(false);
 const showLinkModal = ref(false);
 const showDescriptionModal = ref(false);
+const showEditFileDescriptionModal = ref(false);
 const currentIndicatorId = ref<number | null>(null);
+const currentFileId = ref<number | null>(null);
 const fileForm = useForm({ file: null as File | null, description: '' });
 const fileError = ref('');
 const linkForm = useForm({ url: '', description: '' });
 const linkError = ref('');
 const descriptionForm = useForm({ program_description: '' });
+const editFileDescriptionForm = useForm({ description: '' });
 
 const currentIndicator = computed(() => {
     return props.indicators.find((i) => i.id === currentIndicatorId.value);
@@ -300,6 +303,23 @@ function submitLink() {
         onError: (error) => {
             // Ошибка с бэкенда (например, превышен лимит)
             linkError.value = Object.values(error)[0] || 'Ошибка при добавлении ссылки';
+        },
+    });
+}
+
+function openEditFileDescriptionModal(file: { id: number; description?: string }) {
+    currentFileId.value = file.id;
+    editFileDescriptionForm.description = file.description || '';
+    showEditFileDescriptionModal.value = true;
+}
+
+function submitEditFileDescription() {
+    if (!currentFileId.value) return;
+
+    editFileDescriptionForm.patch(`/files/${currentFileId.value}/description`, {
+        onSuccess: () => {
+            showEditFileDescriptionModal.value = false;
+            router.reload({ preserveScroll: true });
         },
     });
 }
@@ -646,8 +666,17 @@ function changeCategory(categoryCode: string) {
                                             </a>
                                             <button
                                                 v-if="canEditIndicator(indicator.response?.status || '', indicator.can_edit_category)"
+                                                @click="openEditFileDescriptionModal(file)"
+                                                class="ml-1 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="Редактировать описание"
+                                            >
+                                                <FileText class="h-3 w-3" />
+                                            </button>
+                                            <button
+                                                v-if="canEditIndicator(indicator.response?.status || '', indicator.can_edit_category)"
                                                 @click="deleteFile(file.id)"
                                                 class="ml-1 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="Удалить файл"
                                             >
                                                 <Trash2 class="h-3 w-3" />
                                             </button>
@@ -866,6 +895,54 @@ function changeCategory(categoryCode: string) {
                     >
                         <Save class="inline h-4 w-4" />
                         Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования описания файла -->
+    <div
+        v-if="showEditFileDescriptionModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        @click.self="showEditFileDescriptionModal = false"
+    >
+        <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 class="text-xl font-bold text-gray-900">
+                Редактировать описание
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Измените описание файла-доказательства
+            </p>
+
+            <form @submit.prevent="submitEditFileDescription" class="mt-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">
+                        Описание
+                    </label>
+                    <input
+                        v-model="editFileDescriptionForm.description"
+                        type="text"
+                        maxlength="255"
+                        placeholder="Краткое описание файла"
+                        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                </div>
+
+                <div class="mt-6 flex gap-3">
+                    <button
+                        type="button"
+                        @click="showEditFileDescriptionModal = false"
+                        class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                        Отмена
+                    </button>
+                    <button
+                        type="submit"
+                        :disabled="editFileDescriptionForm.processing"
+                        class="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-50"
+                    >
+                        {{ editFileDescriptionForm.processing ? 'Сохранение...' : 'Сохранить' }}
                     </button>
                 </div>
             </form>

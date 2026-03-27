@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EvidenceFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
@@ -62,5 +63,19 @@ class FileController extends Controller
         $mimeType = mime_content_type($fullPath);
 
         return response($fileContent)->header('Content-Type', $mimeType);
+    }
+
+    /**
+     * Обновить описание файла
+     */
+    public function updateDescription(Request $request, EvidenceFile $file)
+    {
+        $validated = $request->validate([
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $file->update(['description' => $validated['description']]);
+
+        return back()->with('success', 'Описание обновлено');
     }
 }

@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');
     Route::get('/files/{file}/view', [FileController::class, 'show'])->name('files.show');
     Route::delete('/files/{file}', [IndicatorResponseController::class, 'deleteFile'])->name('files.delete');
+    Route::patch('/files/{file}/description', [FileController::class, 'updateDescription'])->name('files.update-description');
 
     // ===== Reports Export (Word) =====
     Route::get('/cycles/{cycle}/export/{category}/word', [ReportController::class, 'exportWord'])->name('cycles.export.word');

@@ -35,33 +35,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const showCreateModal = ref(false);
-const form = useForm({
-    year: new Date().getFullYear(),
-    data_period_start: '',
-    data_period_end: '',
-    submission_start: '',
-    submission_end: '',
-});
-
-function openCreateModal() {
-    const year = new Date().getFullYear();
-    form.year = year;
-    form.data_period_start = `${year - 1}-01-01`;
-    form.data_period_end = `${year - 1}-12-31`;
-    form.submission_start = `${year}-02-26`;
-    form.submission_end = `${year}-06-30`;
-    showCreateModal.value = true;
-}
-
-function submitCreate() {
-    form.post('/cycles', {
-        onSuccess: () => {
-            showCreateModal.value = false;
-        },
-    });
-}
-
 function getStatusConfig(status: string) {
     const configs = {
         draft: {
@@ -115,13 +88,6 @@ function getProgressColor(percentage: number) {
                         Управление циклами для рейтинга UI GreenMetric
                     </p>
                 </div>
-                <button
-                    @click="openCreateModal"
-                    class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-                >
-                    <Plus class="h-4 w-4" />
-                    Создать цикл
-                </button>
             </div>
 
             <!-- Список циклов -->
@@ -226,107 +192,8 @@ function getProgressColor(percentage: number) {
                     <p class="mt-1 text-sm text-gray-500">
                         Создайте первый цикл для начала работы
                     </p>
-                    <button
-                        @click="openCreateModal"
-                        class="mt-4 inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
-                    >
-                        <Plus class="h-4 w-4" />
-                        Создать цикл
-                    </button>
                 </div>
             </div>
         </div>
     </AppLayout>
-
-    <!-- Модальное окно создания цикла -->
-    <div
-        v-if="showCreateModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        @click.self="showCreateModal = false"
-    >
-        <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h2 class="text-xl font-bold text-gray-900">
-                Новый цикл
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-                Заполните данные для нового цикла подачи
-            </p>
-
-            <form @submit.prevent="submitCreate" class="mt-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                        Год рейтинга
-                    </label>
-                    <input
-                        v-model="form.year"
-                        type="number"
-                        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">
-                            Начало периода данных
-                        </label>
-                        <input
-                            v-model="form.data_period_start"
-                            type="date"
-                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">
-                            Конец периода данных
-                        </label>
-                        <input
-                            v-model="form.data_period_end"
-                            type="date"
-                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">
-                            Начало приёма
-                        </label>
-                        <input
-                            v-model="form.submission_start"
-                            type="date"
-                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">
-                            Дедлайн
-                        </label>
-                        <input
-                            v-model="form.submission_end"
-                            type="date"
-                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                    </div>
-                </div>
-
-                <div class="mt-6 flex gap-3">
-                    <button
-                        type="button"
-                        @click="showCreateModal = false"
-                        class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                        Отмена
-                    </button>
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
-                    >
-                        {{ form.processing ? 'Создание...' : 'Создать' }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 </template>
