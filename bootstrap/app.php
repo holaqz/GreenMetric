@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Trust Render proxy for HTTPS
-        $middleware->use(TrustProxies::class);
+        $middleware->use([TrustProxies::class]);
         config(['trustedproxies.proxies' => ['*']]);
 
         $middleware->validateCsrfTokens(except: [
