@@ -62,9 +62,28 @@ class CycleController extends Controller
     {
         $user = Auth::user();
         $categoryCode = $request->query('category', 'WR');
-        
+
         // Получаем список доступных пользователю категорий
         $accessibleCategories = $user ? $user->getAccessibleCategoryCodes() : [];
+
+        // Создаём ответы для индикаторов, если их нет
+        $indicatorsInCategory = Indicator::whereHas('category', function ($query) use ($categoryCode) {
+            $query->where('code', $categoryCode);
+        })->get();
+
+        foreach ($indicatorsInCategory as $indicator) {
+            IndicatorResponse::firstOrCreate(
+                [
+                    'cycle_id' => $cycle->id,
+                    'indicator_id' => $indicator->id,
+                ],
+                [
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                    'status' => 'in_progress',
+                ]
+            );
+        }
 
         $indicators = Indicator::whereHas('category', function ($query) use ($categoryCode) {
             $query->where('code', $categoryCode);
@@ -77,7 +96,7 @@ class CycleController extends Controller
         ->get()
         ->map(function ($indicator) use ($cycle, $accessibleCategories, $categoryCode) {
             $response = $indicator->responses->first();
-            
+
             // Может ли пользователь редактировать эту категорию
             $canEditCategory = in_array($categoryCode, $accessibleCategories);
 
