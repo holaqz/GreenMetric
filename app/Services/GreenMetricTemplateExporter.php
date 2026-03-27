@@ -83,7 +83,7 @@ class GreenMetricTemplateExporter
         $candidates = [
             storage_path('app/templates/master_template.docx'),
             base_path('master_template.docx'),
-            'C:\\Users\\fairs\\Downloads\\Telegram Desktop\\master_template.docx',
+            base_path('storage/app/templates/master_template.docx'),
         ];
 
         foreach ($candidates as $path) {
