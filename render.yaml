@@ -41,7 +41,7 @@ services:
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: elios_xzg
+          name: elios_xzgx
           property: password
       - key: SESSION_DRIVER
         value: database
