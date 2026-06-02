@@ -27,21 +27,21 @@ services:
         value: pgsql
       - key: DB_HOST
         fromDatabase:
-          name: greenmetric-db
+          name: elios_xzgx
           property: host
       - key: DB_PORT
         value: 5432
       - key: DB_DATABASE
         fromDatabase:
-          name: greenmetric-db
+          name: elios_xzgx
           property: database
       - key: DB_USERNAME
         fromDatabase:
-          name: greenmetric-db
+          name: elios_xzgx
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: greenmetric-db
+          name: elios_xzgx
           property: password
       - key: SESSION_DRIVER
         value: database
@@ -57,6 +57,6 @@ services:
         value: GreenMetric
 
 databases:
-  - name: greenmetric-db
-    databaseName: greenmetric
+  - name: elios_xzgx
+    databaseName: elios
     plan: free
