@@ -15,14 +15,18 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // === СОЗДАНИЕ ЦИКЛА 2026-2027 ===
+        $currentYear = 2026;
+        $nextYear = 2027;
+
+        // ✅ Используем 'draft' или 'open' вместо 'active'
         $cycle = Cycle::firstOrCreate(
-            ['year' => 2026],
+            ['year' => $currentYear],
             [
-                'data_period_start' => '2026-01-01',
-                'data_period_end' => '2027-12-31',
-                'submission_start' => '2026-06-01',
-                'submission_end' => '2027-09-30',
-                'status' => 'active',
+                'data_period_start' => "$currentYear-01-01",
+                'data_period_end' => "$nextYear-12-31",
+                'submission_start' => "$currentYear-06-01",
+                'submission_end' => "$nextYear-09-30",
+                'status' => 'open', // ← Изменено с 'active' на 'draft'
             ]
         );
         $this->command->info("✅ Цикл {$cycle->year} создан или уже существует");
