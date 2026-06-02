@@ -13,6 +13,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+                // === СОЗДАНИЕ ЦИКЛА 2026-2027 ===
+        $cycle = Cycle::firstOrCreate(
+            ['year' => 2026],
+            [
+                'data_period_start' => '2026-01-01',
+                'data_period_end' => '2027-12-31',
+                'submission_start' => '2026-06-01',
+                'submission_end' => '2027-09-30',
+                'status' => 'active',
+            ]
+        );
+        $this->command->info("✅ Цикл {$cycle->year} создан");
+        
         // Создаём админа
         User::firstOrCreate(
             ['email' => 'admin@greenmetric.com'],
