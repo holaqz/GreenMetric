@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Cycle;  // ← Импорт модели Cycle
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,7 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-                // === СОЗДАНИЕ ЦИКЛА 2026-2027 ===
+        // === СОЗДАНИЕ ЦИКЛА 2026-2027 ===
         $cycle = Cycle::firstOrCreate(
             ['year' => 2026],
             [
@@ -24,8 +25,9 @@ class DatabaseSeeder extends Seeder
                 'status' => 'active',
             ]
         );
-        $this->command->info("✅ Цикл {$cycle->year} создан");
-        
+        $this->command->info("✅ Цикл {$cycle->year} создан или уже существует");
+        // =================================
+
         // Создаём админа
         User::firstOrCreate(
             ['email' => 'admin@greenmetric.com'],
